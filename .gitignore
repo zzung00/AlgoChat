@@ -1,0 +1,13 @@
+bin/main/
+bin/main/*
+bin/
+
+.gradle
+.classpath
+.project
+.settings
+src/main/java
+bin/main/application.properties
+bin/main/package-lock.json
+bin/main/README.md
+bin/main/package.json

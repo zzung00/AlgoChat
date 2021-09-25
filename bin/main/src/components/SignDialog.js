@@ -15,23 +15,37 @@ import axios from 'axios';
 function SignDialog(props) {
   const { onClose, open } = props;
   const [activeStep, setActiveStep] = React.useState(0);
-  const [signUpForm, setSignUpForm] = React.useState({
+  const [signInData, setSignInData] = React.useState({
+    email: '',
+    password: ''
+  });
+  const [signUpData, setSignUpData] = React.useState({
     email: '',
     password: '',
     confirm: '',
     name: ''
   });
 
-  const onChange = (e) => {
+  const onSignInChange = (e) => {
     const { name, value } = e.target;
-    setSignUpForm({
-      ...signUpForm,
+    setSignInData({
+      ...signInData,
+      [name]: value
+    });
+  };
+
+  const onSignUpChange = (e) => {
+    const { name, value } = e.target;
+    setSignUpData({
+      ...signUpData,
       [name]: value
     });
   };
 
   const handleClose = () => {
-    goSignInStep();
+    if (!isSignInStep()) {
+      goSignInStep();
+    }
     onClose();
   };
 
@@ -43,21 +57,26 @@ function SignDialog(props) {
     setActiveStep(1);
   };
 
-  const onSignUp = () => {
-    const data = {
-      email: signUpForm.email,
-      password: signUpForm.password,
-      confirm: signUpForm.confirm,
-      name: signUpForm.name
-    };
+  const onSignIn = () => {
+    axios.post('/user/signin', signInData)
+      .then(res => {
 
-    axios.post('/user/signup', data)
+      })
+      .catch(err => {
+
+      })
+      handleClose();
+  }
+
+  const onSignUp = () => {
+    axios.post('/user/signup', signUpData)
       .then(res => {
         console.log(res);
       })
       .catch(err => {
         console.log(err);
       })
+      handleClose();
   };
 
   const isSignInStep = () => {
@@ -87,12 +106,14 @@ function SignDialog(props) {
               ) : null}
               </DialogTitle>
             <DialogContent>
-              <TextField margin="dense" id="email" label="이메일" type="email" fullWidth variant="outlined" />
-              <TextField margin="dense" id="password" label="비밀번호" type="password" fullWidth variant="outlined" />
+              <div>
+                <TextField margin="dense" id="email" name="email" label="이메일" onChange={onSignInChange} value={signInData.email} type="email" fullWidth variant="outlined" />
+                <TextField margin="dense" id="password" name="password" label="비밀번호" onChange={onSignInChange} value={signInData.password} type="password" fullWidth variant="outlined" />
+              </div>
               <Button onClick={goSignUpStep}>회원가입</Button>
             </DialogContent>
             <DialogActions>
-              <Button onClick={handleClose}>로그인</Button>
+              <Button onClick={onSignIn}>로그인</Button>
             </DialogActions>
           </React.Fragment>
         ) : (
@@ -114,10 +135,10 @@ function SignDialog(props) {
               </DialogTitle>
             <DialogContent>
               <div>
-                <TextField margin="dense" id="email" name="email" label="이메일" onChange={onChange} value={signUpForm.email} type="email" fullWidth variant="outlined" />
-                <TextField margin="dense" id="password" name="password" label="비밀번호" onChange={onChange} value={signUpForm.password} type="password" fullWidth variant="outlined" />
-                <TextField margin="dense" id="confirm" name="confirm" label="비밀번호 확인" onChange={onChange} value={signUpForm.confirm} type="password" fullWidth variant="outlined" />
-                <TextField margin="dense" id="name" name="name" label="이름" onChange={onChange} value={signUpForm.name} type="text" fullWidth variant="outlined" />
+                <TextField margin="dense" id="email" name="email" label="이메일" onChange={onSignUpChange} value={signUpData.email} type="email" fullWidth variant="outlined" />
+                <TextField margin="dense" id="password" name="password" label="비밀번호" onChange={onSignUpChange} value={signUpData.password} type="password" fullWidth variant="outlined" />
+                <TextField margin="dense" id="confirm" name="confirm" label="비밀번호 확인" onChange={onSignUpChange} value={signUpData.confirm} type="password" fullWidth variant="outlined" />
+                <TextField margin="dense" id="name" name="name" label="이름" onChange={onSignUpChange} value={signUpData.name} type="text" fullWidth variant="outlined" />
               </div>
             </DialogContent>
             <DialogActions>

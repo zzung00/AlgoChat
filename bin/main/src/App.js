@@ -1,4 +1,3 @@
-import logo from './logo.svg';
 import Box from '@mui/material/Box';
 import AppBar from '@mui/material/AppBar';
 import ToolBar from '@mui/material/Toolbar';
@@ -9,8 +8,6 @@ import { styled } from '@mui/material/styles';
 import Paper from '@mui/material/Paper';
 import SignDialog from './components/SignDialog';
 import React from 'react';
-
-const steps = ['sign in', 'sign up'];
 
 function App() {
   const [open, setOpen] = React.useState(false);

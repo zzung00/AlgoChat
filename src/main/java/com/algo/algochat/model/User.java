@@ -24,9 +24,6 @@ public class User {
 
   private String number;
 
-  @OneToMany(mappedBy = "user")
-  private List<Room> roomUsers = new ArrayList<Room>();
-
   public Integer getId() {
     return id;
   }

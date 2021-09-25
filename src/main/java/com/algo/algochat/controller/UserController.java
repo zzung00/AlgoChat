@@ -24,33 +24,38 @@ public class UserController {
     private PasswordEncoder passwordEncoder;
 
     @RequestMapping(value = "/signup", method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
-    public @ResponseBody String addNewUser (@RequestBody HashMap<String, Object> body) {
-        User n = new User();
+    public @ResponseBody HashMap<String, Object> addNewUser (@RequestBody HashMap<String, Object> body) {
+        HashMap<String, Object> reponse = new HashMap<>();
+        User user = new User();
         String encodedPassword = passwordEncoder.encode((String) body.get("password"));
 
-        n.setName((String) body.get("name"));
-        n.setEmail((String) body.get("email"));
-        //n.setNumber((String) body.get("number"));
-        n.setPassword(encodedPassword);
-        userRepository.save(n);
-        return "Saved!!";
+        user.setName((String) body.get("name"));
+        user.setEmail((String) body.get("email"));
+        user.setPassword(encodedPassword);
+        userRepository.save(user);
+        reponse.put("name", user.getName());
+        reponse.put("email", user.getEmail());
+
+        return reponse;
     }
 
     @RequestMapping(value = "/signin", method = RequestMethod.POST, produces = "application/json; charset=UTF-8")  
-    public @ResponseBody String signIn (@RequestBody HashMap<String, Object> body) {
+    public @ResponseBody HashMap<String, Object> signIn (@RequestBody HashMap<String, Object> body) {
+        HashMap<String, Object> response = new HashMap<>();
         String email = (String) body.get("email");
         String password = (String) body.get("password");
 
         User loginUser = userRepository.findByEmail(email);
-        if(loginUser == null) {
-            return "존재하지 않은 이메일";
+        if(loginUser == null || !passwordEncoder.matches(password, loginUser.getPassword())) {
+            response.put("result", false);
+            response.put("msg", "존재하지 않은 이메일이거나 비밀번호가 틀립니다");
+            return response;
         }
-
-        if(!passwordEncoder.matches(password, loginUser.getPassword())) {
-            return "비밀번호 일치하지 않음";
-        }
-
-        return "Success";
+        response.put("result", true);
+        response.put("id", loginUser.getId());
+        response.put("name", loginUser.getName());
+        
+        return response;
     }
 
     @GetMapping(path="/all")

@@ -2,6 +2,7 @@ plugins {
 	id 'org.springframework.boot' version '2.5.4'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'java'
+	id 'com.moowork.node' version '1.3.1'
 }
 
 group = 'com.algo'
@@ -34,3 +35,22 @@ dependencies {
 test {
 	useJUnitPlatform()
 }
+
+task installNpm(type: NpmTask) {
+    workingDir = file('frontend')
+    args =['install']
+}
+
+task buildFrontend(type: NpmTask) {
+    workingDir = file('frontend')
+    args = ['run', 'build']
+}
+
+task copyFrontend(type: Copy) {
+    from 'frontend/build'
+    into 'src/main/resources/static'
+}
+
+buildFrontend.dependsOn(installNpm)
+copyFrontend.dependsOn(buildFrontend)
+compileJava.dependsOn(copyFrontend)
